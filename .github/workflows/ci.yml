@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main, 'feature/**']   # Lance la CI sur main et toutes les branches "feature/..."
+  pull_request:
+    branches: [main]                 # Lance aussi la CI sur les PR vers main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false               # Ne coupe pas toute la matrice si une version échoue
+      matrix:
+        python-version: ['3.9', '3.10', '3.11', '3.12']  # Compat Python (le TP demande ces versions)
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4    # 1) Récupère ton code
+
+      - name: Set up Python
+        uses: actions/setup-python@v5  # 2) Installe la version Python de la matrice
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip
+        uses: actions/cache@v4         # 3) Cache des paquets pour accélérer les runs
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements-dev.txt', '**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |                         # 4) Installe projet + deps dev (tests/qualité)
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install -r requirements-dev.txt
+
+      - name: Black (style check)
+        run: black --check mathutils    # 5) Vérifie le formatage (échec si non conforme)
+
+      - name: isort (imports check)
+        run: isort --check mathutils    # 6) Vérifie l’ordre des imports
+
+      - name: Flake8 (lint)
+        run: flake8 mathutils           # 7) Règles de code (lignes, variables, etc.)
+
+      - name: Pytest (with coverage)
+        run: pytest --cov=mathutils --cov-fail-under=80   # 8) Tests + couverture min 80%
