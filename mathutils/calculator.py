@@ -1,8 +1,6 @@
 """Basic mathematical operations."""
 
 import math
-import os
-import sys
 
 
 def add(a, b):
