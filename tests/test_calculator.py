@@ -1,8 +1,10 @@
 """Tests for calculator module."""
 
-import pytest
-from mathutils import calculator
 import sys
+
+import pytest
+
+from mathutils import calculator
 
 
 def test_add():
@@ -47,7 +49,9 @@ def test_square_root():
 
 
 def test_square_root_negative():
-    with pytest.raises(ValueError, match="Cannot calculate square root of negative number"):
+    with pytest.raises(
+        ValueError, match="Cannot calculate square root of negative number"
+    ):
         calculator.square_root(-1)
 
 
