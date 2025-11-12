@@ -5,6 +5,11 @@ on:
     tags:
       - 'v*.*.*'   # Déclenchement uniquement sur push de tags versionnés
 
+
+env :
+    TWINE_USERNAME : __token__
+    TWINE_PASSWORD : ${{ secrets.TOKENPYPI }}
+
 permissions:
   contents: read
   packages: write   # IMPORTANT : autorise la publication sur GitHub Packages
