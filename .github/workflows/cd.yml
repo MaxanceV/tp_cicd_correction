@@ -40,7 +40,4 @@ jobs:
         run: twine check dist/*
 
       - name: Upload to GitHub Packages
-        run: |
-          python -m twine upload \
-            --repository-url https://test.pypi.org/legacy/ dist/*
-            dist/*
+        run: twine upload --repository-url https://test.pypi.org/legacy/ dist/*
