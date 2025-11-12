@@ -40,9 +40,6 @@ jobs:
         run: twine check dist/*
 
       - name: Upload to GitHub Packages
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python -m twine upload \
             --repository-url https://test.pypi.org/legacy/ dist/*
