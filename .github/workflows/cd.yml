@@ -1,0 +1,44 @@
+name: CD (Publish to GitHub Packages)
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'   # Déclenchement uniquement sur push de tags versionnés
+
+permissions:
+  contents: read
+  packages: write   # IMPORTANT : autorise la publication sur GitHub Packages
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install build & twine
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+
+      - name: Build dist
+        run: python -m build
+        # produit dist/*.tar.gz et dist/*.whl
+
+      - name: Twine check
+        run: twine check dist/*
+
+      - name: Upload to GitHub Packages
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python -m twine upload \
+            --repository-url https://pypi.pkg.github.com/${{ github.repository_owner }} \
+            dist/*
